@@ -14,20 +14,108 @@ npm install grunt-usemin --save-dev
 [grunt]: http://gruntjs.com/
 [Getting Started]: https://github.com/gruntjs/grunt/blob/devel/docs/getting_started.md
 
-## Workflow
+## Tasks
 
-usemin is composed of 2 different tasks (`useminPrepare` and `usemin`) that are part of the same workflow:
+`usemin` is exporting 2 different tasks:
 
-- **useminPrepare**: detects special construction (blocks) in the HTML files and update the `grunt` config to run `concat`/`uglify`/`cssmin`/`requirejs` on the files referenced in the block. It does not changes the HTML files it is working on.
-- **usemin**: in the HTML and CSS files it treats, it replaces the blocks by a reference to a single file, as well as all references to images, scripts, CSS files, by their minified/revved/.. version if it is found on the disk. As such this target rewrites the HTML and CSS files it is working on.
+ - `useminPrepare` which purpose is to detect specific construction (blocks) in the scrutinized file, and to build the needed configuration to apply a transformation flow to the files referenced in the block.
 
-Usually, `useminPrepare` is launched first, then the `concat`, `uglify`, `cssmin` and `requirejs` tasks are launched (they will created the minified/revved version of the referenced files), and then, in the end `usemin` is launched.
+ - `usemin` which purpose is to replace blocks by the file they referenced, and replace all references to assets by their revved version , if it is found on the disk. This target modifies the files it is working on.
+
+Usually, `useminPrepare` is launched first, then the steps of the transformation flow (for example, `concat`, `uglify`, `cssmin` and `requirejs`), and then, in the end `usemin` is launched.
+
+
+## The usemin task
+
+The `usemin` task has 2 actions:
+
+- First it replaces all the blocks with a single "summary" line, pointing at a file creating by the transformation flow.
+- Then it looks for references to assets (i.e. images, scripts, ...), and tries to replace them with their revved version if it can find one on disk
+
+### On directories
+
+When `usemin` tries to replace referenced assets with their revved version it has to look at a collection of directories (asset search paths): for each of the directory of this collection it will look at the bellow tree, and try to find the revved version.
+This asset search directories collection is by default set to the location of the file that is scrutinized but can be modified (see Options bellow).
+
+#### Example 1: file `dist/html/index.html` has the following content:
+
+``` html
+<link rel="stylesheet" href="styles/main.css">
+<img src="../images/test.png">
+```
+By default `usemin` will look under `dist/html` for revved versions of:
+
+- `styles/main.css`: a revved version of `main.css` will be looked at under the `dist/html/styles` directory. For example a file `dist/html/styles/1234.main.css` will match (although `dist/html/1234.main.css` won't: the path of the referenced file is important)
+- `../images/test.png`: it basically means that a revved version of `test.png` will be looked for under the `dist/images` directory
+
+#### Example 2: file `dist/html/index.html` has the following content:
+
+``` html
+    <link rel="stylesheet" href="/styles/main.css">
+    <img src="/images/test.png">
+```
+By default `usemin` will look under `dist/html` for revved versions of `styles/main.css` and `images/test.png`. Now let's suppose our assets are scattered in `dist/assets`. By changing the asset search path list to `['dist/assets']`, the revved versions of the files will be looked under `dist/assets` (and thus, for example, `dist/assets/images/875487.tes.png` and `dist/assets/styles/98090.main.css`) will be found.
+
+### Options
+
+#### assetsDirs
+
+Type: 'Array'
+Default: Single item array set to the value of the directory where the currently looked at file is.
+
+List of directories where we should start to look for revved version of the assets referenced in the currently looked at file.
+
+Example:
+``` js
+usemin: {
+  html: 'build/index.html',
+  options: {
+    assetsDirs: ['foo/bar', 'bar']
+  }
+}
+```
+
+#### patterns
+
+Type: 'Object'
+Default: Empty
+
+Allows for user defined pattern to replace reference to files. For example, let's suppose that you want for some reason replace
+all references to `'image.png'` in your Javascript files by the revved version of `image.png` found bellow the directory `images`.
+By specifying something along the lines of:
+
+```js
+usemin: {
+  js: '*.js',
+  options: {
+    assetsDirs: 'images',
+    patterns: {
+      js: [[/(image\.png)/, 'Replacing reference to image.png']]
+    }
+  }
+}
+```
+
+So in short:
+
+* key in pattern should match the target (e.g `js` key for the target `js`)
+* Each pattern is an array of arrays. These arrays are composed of 4 items (last 2 are optionals):
+** First one if the regexp to use. The first group is the one that is supposed to represent the file
+   reference to replace
+** Second one is a logging string
+*** FIXME
+*** FIXME
+
+
+
 
 ## The useminPrepare task
 
-A special task which uses the build block HTML comments in markup to get back the list of files to handle, and initialize the grunt configuration appropriately, and automatically.
+`useminPrepare` task is updating the grunt configuration to apply a configured transformation flow to tagged files (i.e. blocks).
+By default the transformation flow is composed of `concat` and `uglifyjs` for JS files, but it can be configured.
 
-Custom HTML "block" comments are provided as an API for interacting with the build script. These comments adhere to the following pattern:
+### Blocks
+Blocks are expressed as:
 
 ```html
 <!-- build:<type>(alternate search path) <path> -->
@@ -49,6 +137,15 @@ An example of this in completed form can be seen below:
 <script src="js/views/thing-view.js"></script>
 <!-- endbuild -->
 ```
+### Transformation flow
+
+The transformation flow is made of sequential steps: each of the step transform the file, and useminPrepare will modify the configuration in order to described steps are correctly performed.
+
+By default the flow is: `concat -> uglifyjs`.
+Additionnally to the flow, at the end, some postprocessors can be launched to alter further the configuration. The default processor used is 'requirejs': it alters the configuration to support requirejs correctly.
+
+
+### Directories
 
 Internally, the task parses your HTML markup to find each of these blocks, and initializes for you the corresponding Grunt config for the concat / uglify tasks when `type=js`, the concat / cssmin tasks when `type=css`.
 
@@ -72,23 +169,51 @@ It is using only one target: `html`, with a list of the concerned files. For exa
 
 ### Options
 
-#### uglify
-Type: 'string'
-Default: 'uglify'
-
-Name of the tool used to uglify the JavaScript.
-
-#### cssmin
-Type: 'string'
-Default: 'cssmin'
-
-Name of the tool used to minify the CSS.
-
 ### dest
 Type: 'string'
 Default: nil
 
 Base directory where the transformed files should be output.
+
+### flow
+Type: 'object'
+Default: { steps: ['concat', 'uglify'], post: ['requirejs']}
+
+This allow you to configure the workflow, either on a per-target basis, or for all the targets.
+You can change separately the `steps` or the post-processors (`post`).
+
+For example:
+
+* to change the `steps` and `post` for the target `html`:
+
+```js
+'useminPrepare', {
+      html: 'index.html',
+      options: {
+        flow: {
+          html: {
+            steps: ['uglifyjs'],
+            post: []
+          }
+        }
+      }
+    }
+```
+
+* to change the `steps` and `post` for all targets:
+
+```js
+'useminPrepare', {
+      html: 'index.html',
+      options: {
+        flow: {
+          steps: ['uglifyjs'],
+          post: []
+        }
+      }
+    }
+```
+
 
 ## The usemin task
 
@@ -124,6 +249,21 @@ Change the basedir that represent the location of the transformed file. For exam
 ```
 
 By default, if the file to be transformed is `index.html`, the images, scripts, ... referenced by this file will be considered are being in the `views` directory, whereas they must be linked to the `styles` directory.
+
+## On directories
+The main difference to be kept in mind, regarding directories and tasks, is that for `useminPrepare`, the directories needs to indicate the input, transient and output path needed to output the right configuration for the processors pipeline, whereas in the case of `usemin` it only reflects the output paths, as all the needed assets should have been output to the destination dir (either transformed or just copied)
+
+### useminPrepare
+`useminPrepare` is trying to prepare the right configuration for the pipeline of actions that are going to be applied on the blocks (for example concatenation and uglify-cation). As such it needs to have the input directory, temporary directories (staging) and destination directory.
+The files referenced in the block are either absolute or relative (`/images/foo.png` or `../../images/foo.png`).
+Absolute files references are looked in a given set of search path (input), which by default is set to the directory where the html/css file examined is located (can be overriden per block).
+Relative files references are also looked at from location of the examined file, unless stated otherwise.
+
+
+### usemin
+`usemin` target is replacing references to images, scrips, css, ... in the furnished files (html, css, ...). These references may be either absolute (i.e. `/images/foo.png`) or relative (i.e. `image/foo.png` or `../images/foo.png`).
+When the reference is absolute a set of asset search paths should be looked at under the destination directory (for example, using the previous example, and `searchpath` equal to `['assets']`, `usemin` would try to find either a revved version of the image of the image bellow the `assets` directory: for example `dest/assets/images/1223443.foo.png`).
+When the reference is relative, by default the referenced item is looked in the path relative *to the current file location* in the destination directory (e.g. with the preceding example, if the file is `build/bar/index.html`, then transformed `index.html` will be in `dist/bar`, and `usemin` will look for `dist/bar/../images/32323.foo.png`).
 
 ## License
 

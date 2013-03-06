@@ -21,6 +21,10 @@
   "scripts": {
     "test": "grunt"
   },
+  "dependencies": {
+    "lodash": "~1.0.1",
+    "debug": "~0.7.2"
+    },
   "devDependencies": {
     "grunt": "~0.4.1",
     "mocha": "~1.9.0",
