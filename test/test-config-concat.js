@@ -3,21 +3,21 @@ var assert = require('assert');
 var concatConfig = require('../lib/config/concat.js');
 
 var block = {
-      type: 'js',
-      dest: 'scripts/site.js',
-      src: [
-        'foo.js',
-        'bar.js',
-        'baz.js'
-      ],
-      raw: [
-        '    <!-- build:js scripts/site.js -->',
-        '    <script src="foo.js"></script>',
-        '    <script src="bar.js"></script>',
-        '    <script src="baz.js"></script>',
-        '    <!-- endbuild -->'
-      ]
-    };
+    type: 'js',
+    dest: 'scripts/site.js',
+    src: [
+      'foo.js',
+      'bar.js',
+      'baz.js'
+    ],
+    raw: [
+      '    <!-- build:js scripts/site.js -->',
+      '    <script src="foo.js"></script>',
+      '    <script src="bar.js"></script>',
+      '    <script src="baz.js"></script>',
+      '    <!-- endbuild -->'
+    ]
+  };
 
 describe('Concat config write', function () {
   it('should exhibit a name', function() {

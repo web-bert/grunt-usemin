@@ -163,34 +163,34 @@ describe('RevvedFinder', function () {
       // });
 
       it('should return matching file as well as base directory', function() {
-        var rf = new RevvedFinder(function (pattern) {
+        var rf = new RevvedFinder(function () {
           return ['temp/./2323.fred.html'];
         });
         var rfile = rf.find('fred.html', ['temp', 'dist']);
         assert.equal(rfile, '2323.fred.html');
 
-        rf = new RevvedFinder(function (pattern) {
+        rf = new RevvedFinder(function () {
           return ['dist/bar/../2323.fred.html'];
         });
-        var rfile = rf.find('../fred.html', ['temp/foo', 'dist/bar']);
+        rfile = rf.find('../fred.html', ['temp/foo', 'dist/bar']);
         assert.equal(rfile, '../2323.fred.html');
 
-        rf = new RevvedFinder(function (pattern) {
+        rf = new RevvedFinder(function () {
           return ['dist/bar/1234.test.png', 'dist/bar/images/1234.test.png'];
         });
-        var rfile = rf.find('images/test.png', ['temp/foo', 'dist/bar']);
+        rfile = rf.find('images/test.png', ['temp/foo', 'dist/bar']);
         assert.equal(rfile, 'images/1234.test.png');
 
-        rf = new RevvedFinder(function (pattern) {
+        rf = new RevvedFinder(function () {
           return ['dist/bar/../1234.test.png', 'dist/bar/../images/1234.test.png'];
         });
-        var rfile = rf.find('../images/test.png', ['temp/foo', 'dist/bar']);
+        rfile = rf.find('../images/test.png', ['temp/foo', 'dist/bar']);
         assert.equal(rfile, '../images/1234.test.png');
 
-        rf = new RevvedFinder(function (pattern) {
+        rf = new RevvedFinder(function () {
           return ['dist/bar/images/1234.test.png', 'dist/bar/images/misc/1234.test.png'];
         });
-        var rfile = rf.find('images/misc/test.png', ['temp/foo', 'dist/bar']);
+        rfile = rf.find('images/misc/test.png', ['temp/foo', 'dist/bar']);
         assert.equal(rfile, 'images/misc/1234.test.png');
       });
 

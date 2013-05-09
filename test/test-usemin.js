@@ -30,10 +30,10 @@ var directory = function directory(dir) {
 };
 
 describe('usemin', function () {
-  describe('absolute paths', function() {
+  describe('absolute paths', function () {
     beforeEach(directory('temp'));
 
-    it('should replace with revved files when found', function() {
+    it('should replace with revved files when found', function () {
         grunt.file.mkdir('build');
         grunt.file.mkdir('build/images');
         grunt.file.mkdir('build/images/misc');
@@ -55,9 +55,9 @@ describe('usemin', function () {
         assert.ok(changed.match(/<img src="\/\/images\/23012\.bar\.png">/));
         assert.ok(changed.match(/<img src="\/images\/misc\/2a436\.test\.png">/));
 
-    });
+      });
 
-    it('should take into account alternate search path for assets', function() {
+    it('should take into account alternate search path for assets', function () {
         grunt.file.mkdir('build');
         grunt.file.mkdir('foo');
         grunt.file.mkdir('foo/images');
@@ -79,9 +79,9 @@ describe('usemin', function () {
         assert.ok(changed.match(/<img src="\/\/images\/23012\.bar\.png">/));
         assert.ok(changed.match(/<img src="\/images\/misc\/2a436\.test\.png">/));
 
-    });
+      });
 
-    it('should allow for several asset dirs', function() {
+    it('should allow for several asset dirs', function () {
         grunt.file.mkdir('build');
         grunt.file.mkdir('foo');
         grunt.file.mkdir('foo/images');
@@ -106,17 +106,17 @@ describe('usemin', function () {
         assert.ok(changed.match(/<img src="\/images\/23012\.test\.png">/));
         assert.ok(changed.match(/<img src="\/\/images\/23012\.bar\.png">/));
         assert.ok(changed.match(/<img src="\/images\/misc\/2a436\.test\.png">/));
-        assert.ok(changed.match(/<script src="\/scripts\/12345.plugins.js">/));
-        assert.ok(changed.match(/<script data-main="\/scripts\/6789.amd-app"/));
+        assert.ok(changed.match(/<script src="\/scripts\/12345\.plugins\.js">/));
+        assert.ok(changed.match(/<script data-main="\/scripts\/6789\.amd-app"/));
 
-    });
+      });
 
   });
 
   describe('relative paths', function () {
     beforeEach(directory('temp'));
 
-      it('should replace with revved files when found', function(){
+    it('should replace with revved files when found', function () {
         grunt.file.mkdir('build');
         grunt.file.mkdir('build/images');
         grunt.file.mkdir('build/foo');
@@ -135,12 +135,12 @@ describe('usemin', function () {
         var changed = grunt.file.read('build/foo/index.html');
 
         assert.ok(changed.match(/<img src="\.\.\/images\/23012\.test\.png">/));
-        assert.ok(changed.match(/\<link rel=\"stylesheet\" href="styles\/main\.min\.css"\>/));
-        assert.ok(changed.match(/\<img src=\"\.\.\/images\/misc\/2a436\.test\.png\"\>/));
+        assert.ok(changed.match(/<link rel=\"stylesheet\" href=\"styles\/main\.min\.css\">/));
+        assert.ok(changed.match(/<img src=\"\.\.\/images\/misc\/2a436\.test\.png\">/));
 
       });
 
-      it('should take into account alternate path for assets', function() {
+    it('should take into account alternate path for assets', function () {
         grunt.file.mkdir('build');
         grunt.file.mkdir('foo');
         grunt.file.mkdir('foo/bar');
@@ -159,11 +159,11 @@ describe('usemin', function () {
 
         var changed = grunt.file.read('build/index.html');
 
-        assert.ok(changed.match(/<img src="\.\.\/images\/23012.test\.png">/));
+        assert.ok(changed.match(/<img src="\.\.\/images\/23012\.test\.png">/));
         assert.ok(changed.match(/<img src="\.\.\/images\/misc\/2a436\.test\.png">/));
       });
 
-    it('should allow for several asset dirs', function() {
+    it('should allow for several asset dirs', function () {
         grunt.file.mkdir('build');
         grunt.file.mkdir('foo/bar');
         grunt.file.mkdir('foo/images');
@@ -187,10 +187,10 @@ describe('usemin', function () {
 
         assert.ok(changed.match(/<img src="\.\.\/images\/23012\.test\.png">/));
         assert.ok(changed.match(/<img src="\.\.\/images\/misc\/2a436\.test\.png">/));
-        assert.ok(changed.match(/<script src="scripts\/12345.plugins.js">/));
-        assert.ok(changed.match(/<script data-main="scripts\/6789.amd-app"/));
+        assert.ok(changed.match(/<script src="scripts\/12345\.plugins\.js">/));
+        assert.ok(changed.match(/<script data-main="scripts\/6789\.amd-app"/));
 
-    });
+      });
 
   });
 
@@ -266,7 +266,7 @@ describe('usemin', function () {
 
   });
 
-  it('should allow for additional replacement patterns', function() {
+  it('should allow for additional replacement patterns', function () {
     grunt.file.mkdir('images');
     grunt.file.write('images/2132.image.png', 'foo');
     grunt.log.muted = true;
@@ -277,9 +277,11 @@ describe('usemin', function () {
         assetsDirs: 'images',
         patterns: {
           js: [
-          [/reference_to_image = '([^\']+)'/, 'Replacing image']]
+            [/referenceToImage = '([^\']+)'/, 'Replacing image']
+          ]
         }
-      }});
+      }
+    });
     grunt.file.copy(path.join(__dirname, 'fixtures/misc.js'), 'misc.js');
     grunt.task.run('usemin');
     grunt.task.start();
@@ -287,7 +289,7 @@ describe('usemin', function () {
     var changed = grunt.file.read('misc.js');
 
     // Check replace has performed its duty
-    assert.ok(changed.match(/reference_to_image = '2132.image.png'/));
+    assert.ok(changed.match(/referenceToImage = '2132\.image\.png'/));
   });
 
 
@@ -461,7 +463,7 @@ describe('useminPrepare', function () {
 
   });
 
-  it('should have configurable flow', function() {
+  it('should have configurable flow', function () {
     grunt.log.muted = true;
     grunt.config.init();
     grunt.config('useminPrepare', {
@@ -489,7 +491,7 @@ describe('useminPrepare', function () {
 
   });
 
-  it('should have configurable flow per target', function() {
+  it('should have configurable flow per target', function () {
     grunt.log.muted = true;
     grunt.config.init();
     grunt.config('useminPrepare', {

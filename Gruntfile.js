@@ -10,7 +10,8 @@ module.exports = function (grunt) {
         'lib/*.js',
         'tasks/*.js',
         'test/**/*.js',
-        '!test/temp/scripts/*.js',
+        '!test/temp/**/*.js',
+        '!test/fixtures/*.js'
       ]
     }
   });

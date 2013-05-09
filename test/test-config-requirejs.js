@@ -3,37 +3,37 @@ var assert = require('assert');
 var requirejsConfig = require('../lib/config/requirejs.js');
 
 var block = {
-      type: 'js',
+    type: 'js',
+    dest: 'scripts/amd-app.js',
+    requirejs: {
       dest: 'scripts/amd-app.js',
-      requirejs: {
-        dest: 'scripts/amd-app.js',
-        baseUrl: 'scripts',
-        name: 'main',
-        origScript: 'foo/require.js',
-        src: 'foo/require.js'
-      },
-      src: [
-        'foo/require.js'
-      ],
-      raw: [
-        '<!-- build:js scripts/amd-app.js -->',
-        '<script data-main="scripts/main" src="foo/require.js"></script>',
-        '<!-- endbuild -->'
-      ]
-    };
+      baseUrl: 'scripts',
+      name: 'main',
+      origScript: 'foo/require.js',
+      src: 'foo/require.js'
+    },
+    src: [
+      'foo/require.js'
+    ],
+    raw: [
+      '<!-- build:js scripts/amd-app.js -->',
+      '<script data-main="scripts/main" src="foo/require.js"></script>',
+      '<!-- endbuild -->'
+    ]
+  };
 
-var block_without_requirejs = {
-      type: 'js',
-      dest: 'scripts/amd-app.js',
-      src: [
-        'foo/require.js'
-      ],
-      raw: [
-        '<!-- build:js scripts/amd-app.js -->',
-        '<script data-main="scripts/main" src="foo/require.js"></script>',
-        '<!-- endbuild -->'
-      ]
-    };
+var blockWithoutRequirejs = {
+    type: 'js',
+    dest: 'scripts/amd-app.js',
+    src: [
+      'foo/require.js'
+    ],
+    raw: [
+      '<!-- build:js scripts/amd-app.js -->',
+      '<script data-main="scripts/main" src="foo/require.js"></script>',
+      '<!-- endbuild -->'
+    ]
+  };
 
 
 describe('Requirejs config write', function() {
@@ -50,14 +50,14 @@ describe('Requirejs config write', function() {
 
   it('should do nothing if the block is not requirejs enabled', function() {
     var ctx = { inDir: 'zzz', inFiles: ['foo.js'], outDir: 'tmp/requirejs', outFiles: []};
-    var cfg = requirejsConfig.createConfig( ctx, block_without_requirejs);
+    var cfg = requirejsConfig.createConfig( ctx, blockWithoutRequirejs);
     assert.deepEqual(cfg, {});
   });
 
   it('should add a .js when needed to mainConfigFile', function() {
     var ctx = { inDir: 'zzz', inFiles: ['foo.js'], outDir: 'tmp/requirejs', outFiles: []};
     var cfg = requirejsConfig.createConfig( ctx, block );
-    assert.equal(cfg['default']['options']['mainConfigFile'], 'zzz/scripts/main.js');
+    assert.equal(cfg['default'].options.mainConfigFile, 'zzz/scripts/main.js');
   });
 
   it('should treat multi-config requirejs');

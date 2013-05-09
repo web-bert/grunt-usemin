@@ -1,4 +1,4 @@
-'user strict';
+'use strict';
 var path = require('path');
 var fs = require('fs');
 var rimraf = require('rimraf');
@@ -47,26 +47,26 @@ helpers.blocks = function() {
     ];
 };
 
-helpers.css_block = function() {
+helpers.cssBlock = function() {
   return {
-        type: 'css',
-        dest: '/styles/main.min.js',
-        searchPath: [],
-        indent: '    ',
-        src: [
-          'foo.js',
-          'bar.js',
-          'baz.js'
-        ],
-        raw: [
-          '    <!-- build:css sstyles/main.min.css -->',
-          '    <link rel="stylesheet" href="styles/main.css">',
-          '    <!-- endbuild -->'
-        ]
-      };
+    type: 'css',
+    dest: '/styles/main.min.js',
+    searchPath: [],
+    indent: '    ',
+    src: [
+      'foo.js',
+      'bar.js',
+      'baz.js'
+    ],
+    raw: [
+      '    <!-- build:css sstyles/main.min.css -->',
+      '    <link rel="stylesheet" href="styles/main.css">',
+      '    <!-- endbuild -->'
+    ]
+  };
 };
 
-helpers.requirejs_block = function() {
+helpers.requirejsBlock = function() {
   return {
       type: 'js',
       dest: 'scripts/amd-app.js',
@@ -95,7 +95,7 @@ helpers.createFile = function(name, dir, blocks) {
     dir: dir,
     searchPath: [dir]
   };
-}
+};
 
 helpers.file = {
   mkdir: function(path, mode) { fs.mkdirSync(path,mode);},
@@ -103,29 +103,27 @@ helpers.file = {
     return fs.writeFileSync(path, content);
   },
   copy: function(srcFile, destFile, encoding) {
-  var content = fs.readFileSync(srcFile, encoding);
-  fs.writeFileSync(destFile, content, encoding);
+    var content = fs.readFileSync(srcFile, encoding);
+    fs.writeFileSync(destFile, content, encoding);
   }
 };
 
 helpers.makeFinder = function(mapping) {
     return {
-    find: function (s,b) {
-      var output;
-      if (typeof b === 'string' || b instanceof String) {
-        b = [b];
-      }
-      var dir = _.find(b, function(d) {return mapping[path.join(d,s)] });
-      var file = typeof dir != 'undefined' ? mapping[path.join(dir,s)] : s;
+      find: function (s,b) {
+        var output;
+        if (typeof b === 'string' || b instanceof String) {
+          b = [b];
+        }
+        var dir = _.find(b, function(d) {return mapping[path.join(d,s)]; });
+        var file = typeof dir !== 'undefined' ? mapping[path.join(dir,s)] : s;
 
-      if (typeof file === 'array' || file instanceof Array) {
-        output = file[0];
-      } else {
-        output = file;
+        if (typeof file === 'array' || file instanceof Array) {
+          output = file[0];
+        } else {
+          output = file;
+        }
+        return output;
       }
-      return output;
-    }
+    };
   };
-};
-
-

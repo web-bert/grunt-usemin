@@ -1,6 +1,5 @@
 'use strict';
 var util = require('util');
-var path = require('path');
 
 var inspect = function (obj) {
   return util.inspect(obj, false, 4, true);
@@ -22,7 +21,7 @@ var getFlowFromConfig = function(config,target) {
     }
   }
   return flow;
-}
+};
 
 //
 // ### Usemin
@@ -88,7 +87,6 @@ module.exports = function (grunt) {
   var FileProcessor = require('../lib/fileprocessor');
   var RevvedFinder = require('../lib/revvedfinder');
   var ConfigWriter = require('../lib/configwriter');
-  var File = require('../lib/file');
   var _ = grunt.util._;
 
   grunt.registerMultiTask('usemin', 'Replaces references to non-minified scripts / stylesheets', function () {
@@ -117,7 +115,7 @@ module.exports = function (grunt) {
     this.files.forEach(function (fileObj) {
       var files = grunt.file.expand({nonull: true}, fileObj.src);
       files.forEach(function (filename) {
-      debug('looking at file %s', filename);
+        debug('looking at file %s', filename);
 
         grunt.log.subhead('Processing as ' + options.type.toUpperCase() + ' - ' + filename);
 
@@ -153,9 +151,6 @@ module.exports = function (grunt) {
     var c = new ConfigWriter( flow.steps, flow.post, {input: 'app', dest: dest, staging: '.tmp'} );
 
     files.forEach(function (filepath) {
-      var inDir = path.dirname(filepath);
-
-      var revvedfinder = new RevvedFinder(function (p) { return grunt.file.expand({filter: 'isFile'}, p); });
 
       var config = c.process(filepath, grunt.config());
 
