@@ -100,11 +100,11 @@ So in short:
 
 * key in pattern should match the target (e.g `js` key for the target `js`)
 * Each pattern is an array of arrays. These arrays are composed of 4 items (last 2 are optionals):
-** First one if the regexp to use. The first group is the one that is supposed to represent the file
-   reference to replace
-** Second one is a logging string
-*** FIXME
-*** FIXME
+  * First one if the regexp to use. The first group is the one that is supposed to represent the file
+    reference to replace
+  * Second one is a logging string
+    * FIXME
+    * FIXME
 
 
 
@@ -137,12 +137,42 @@ An example of this in completed form can be seen below:
 <script src="js/views/thing-view.js"></script>
 <!-- endbuild -->
 ```
+
 ### Transformation flow
 
 The transformation flow is made of sequential steps: each of the step transform the file, and useminPrepare will modify the configuration in order to described steps are correctly performed.
 
 By default the flow is: `concat -> uglifyjs`.
 Additionnally to the flow, at the end, some postprocessors can be launched to alter further the configuration. The default processor used is 'requirejs': it alters the configuration to support requirejs correctly.
+
+Let's have an example, using the default flow (we're just going to look at the steps), `app` for input dir, `dist` for output dir,  and the following block:
+
+```html
+<!-- build:js js/app.js -->
+<script src="js/app.js"></script>
+<script src="js/controllers/thing-controller.js"></script>
+<script src="js/models/thing-model.js"></script>
+<script src="js/views/thing-view.js"></script>
+<!-- endbuild -->
+```
+The produced configurartion will look like:
+
+```js
+{
+  concat: {
+    '.tmp/concat/js/app.js': [
+      'app/js/app.js',
+      'app/js/controllers/thing-controller.js',
+      'app/js/models/thing-model.js',
+      'app/js/views/thing-view.js'
+      ]
+  },
+  uglifyjs: {
+    'dist/js/app.js': ['.tmp/concat/js/app.js']
+  }
+}
+```
+
 
 
 ### Directories
@@ -213,6 +243,32 @@ For example:
       }
     }
 ```
+The given steps or post-processors may be given by strings (for the default steps and post-processors), or as object (for the user-defined ones).
+
+#### User-defined steps and post-processors
+
+User-defined steps and post-processors must have 2 attributes:
+
+* `name`: which is the name of the step or post-processors
+* `createConfig` which is a 2 arguments function ( a `context` and the treated `block`)
+
+##### `createConfig`
+
+The `createConfig` function is responsible for creating (or updating) the configuration associated to the current step/post-processor.
+It takes 2 arguments ( a `context` and the treated `block`), and returns a configuration object.
+
+###### `context`
+The `context` object represent the current context the step/post-processor is running in. As the step/post-processor is a step of a flow, it must be listed the input files and directory it must write a configuration for, potentially the already existing configuration. It must also indicate to the other steps/post-processor which files it will output in which directory. All this information is hold by the `context` object.
+Attributes:
+
+* `inDir`: the directory where the `input` file for the step/post-processors will be
+* `inFiles`: the list of input file to take care of
+* `outDir`: where the files created by the step/post-processors will be
+* `outFiles`: the files that are going to be created
+* `last`: whether or not we're the last step of the flow
+* `options`: options of the `Grubntfile.js` for this step (e.g. if the step is named `foo`, holds configuration of teh `Gruntfile.js` associated to the attribute `foo`)
+
+###### `block`
 
 
 ## The usemin task
