@@ -33,10 +33,10 @@ describe('ConfigWriter', function () {
       var file = helpers.createFile('foo', 'app', blocks);
       var c = new ConfigWriter( flow, [], {input: 'app', dest: 'dist', staging: '.tmp'} );
       var config = c.process(file);
-      assert.deepEqual(config, {
+      assert.deepEqual(config, helpers.normalize({
         'concat':{'.tmp/concat/scripts/site.js': ['app/foo.js', 'app/bar.js', 'app/baz.js']},
         'uglify': {'dist/scripts/site.js': ['.tmp/concat/scripts/site.js']}
-      });
+      }));
     });
 
     it('should have a configurable destination directory', function() {
@@ -45,10 +45,10 @@ describe('ConfigWriter', function () {
       var file = helpers.createFile('foo', 'app', blocks);
       var c = new ConfigWriter( flow, [], {input: 'app', dest: 'destination', staging: '.tmp'} );
       var config = c.process(file);
-      assert.deepEqual(config, {
+      assert.deepEqual(config, helpers.normalize({
         'concat':{'.tmp/concat/scripts/site.js': ['app/foo.js', 'app/bar.js', 'app/baz.js']},
         'uglify': {'destination/scripts/site.js': ['.tmp/concat/scripts/site.js']}
-      });
+      }));
     });
 
     it('should have a configurable staging directory', function() {
@@ -57,10 +57,10 @@ describe('ConfigWriter', function () {
       var file = helpers.createFile('foo', 'app', blocks);
       var c = new ConfigWriter( flow, [], {input: 'app', dest: 'dist', staging: 'staging'} );
       var config = c.process(file);
-      assert.deepEqual(config, {
+      assert.deepEqual(config, helpers.normalize({
         'concat': { 'staging/concat/scripts/site.js': ['app/foo.js', 'app/bar.js', 'app/baz.js'] },
         'uglify': { 'dist/scripts/site.js': ['staging/concat/scripts/site.js'] }
-      });
+      }));
     });
 
     it('should allow for single step flow', function() {
@@ -69,7 +69,7 @@ describe('ConfigWriter', function () {
       var file = helpers.createFile('foo', 'app', blocks);
       var c = new ConfigWriter( flow, [], {input: 'app', dest: 'dist', staging: 'staging'} );
       var config = c.process(file);
-      assert.deepEqual(config, {'uglify': {'dist/scripts/site.js': ['app/foo.js', 'app/bar.js', 'app/baz.js']}});
+      assert.deepEqual(config, helpers.normalize({'uglify': {'dist/scripts/site.js': ['app/foo.js', 'app/bar.js', 'app/baz.js']}}));
     });
 
     it('should rewrite the requirejs config if needed', function() {
@@ -79,7 +79,7 @@ describe('ConfigWriter', function () {
       var c = new ConfigWriter( flow, ['requirejs'], {input: 'app', dest: 'dist', staging: 'staging'} );
       var config = c.process(file);
 
-      assert.deepEqual(config, {
+      assert.deepEqual(config, helpers.normalize({
         'concat':{'staging/concat/scripts/amd-app.js': ['app/scripts/main.js']},
         'uglify': {'dist/scripts/amd-app.js': ['staging/concat/scripts/amd-app.js']},
         'requirejs': { 'default':
@@ -87,7 +87,7 @@ describe('ConfigWriter', function () {
             options: {name: 'main', out: 'dist/scripts/amd-app.js', baseUrl: 'app/scripts', mainConfigFile: 'app/scripts/main.js'}
           }
         }
-        });
+        }));
     });
 
     it('should allow for a configuration of the flow\'s step order', function() {
@@ -97,10 +97,10 @@ describe('ConfigWriter', function () {
       var c = new ConfigWriter( flow, [], {input: 'app', dest: 'dist', staging: 'staging'} );
       var config = c.process(file);
 
-      assert.deepEqual(config, {
+      assert.deepEqual(config, helpers.normalize({
         'uglify': {'staging/uglify/foo.js': ['app/foo.js'], 'staging/uglify/bar.js': ['app/bar.js'], 'staging/uglify/baz.js': ['app/baz.js']},
         'concat': {'dist/scripts/site.js': ['staging/uglify/foo.js', 'staging/uglify/bar.js', 'staging/uglify/baz.js']}
-      });
+      }));
     });
 
     it('should augment the furnished config', function() {
@@ -109,10 +109,10 @@ describe('ConfigWriter', function () {
       var file = helpers.createFile('foo', 'app', blocks);
       var c = new ConfigWriter( flow, [], {input: 'app', dest: 'destination', staging: '.tmp'} );
       config = c.process(file, config);
-      assert.deepEqual(config, {
+      assert.deepEqual(config, helpers.normalize({
         'concat':{'.tmp/concat/scripts/site.js': ['app/foo.js', 'app/bar.js', 'app/baz.js'], 'foo.js': 'bar.js'},
         'uglify': {'destination/scripts/site.js': ['.tmp/concat/scripts/site.js']}
-      });
+      }));
     });
 
     it('should allow for an empty flow');

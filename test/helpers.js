@@ -115,8 +115,8 @@ helpers.makeFinder = function(mapping) {
         if (typeof b === 'string' || b instanceof String) {
           b = [b];
         }
-        var dir = _.find(b, function(d) {return mapping[path.join(d,s)]; });
-        var file = typeof dir !== 'undefined' ? mapping[path.join(dir,s)] : s;
+        var dir = _.find(b, function(d) {return mapping[path.join(d,s).replace(/\\/g, '/')]; });
+        var file = typeof dir !== 'undefined' ? mapping[path.join(dir,s).replace(/\\/g, '/')] : s;
 
         if (typeof file === 'array' || file instanceof Array) {
           output = file[0];
@@ -127,3 +127,36 @@ helpers.makeFinder = function(mapping) {
       }
     };
   };
+
+helpers.normalize = function (object) {
+  // turns {'foo/bar': ['app/bar.js', 'app/baz.js']}
+  // into {'foo\\bar': ['app\\bar.js', 'app\\baz.js']} on Windows
+
+  if (process.platform !== 'win32') {
+    return object;
+  }
+
+  if (object) {
+    if (typeof object === 'string') {
+      object = path.normalize(object);
+    } else if (object instanceof Array) {
+      for (var i = 0; i < object.length; i++) {
+        object[i] = helpers.normalize(object[i]);
+      }
+    } else {
+      for (var prop in object) {
+        if (object.hasOwnProperty(prop)) {
+          if (prop.indexOf('/') !== -1) {
+            object[path.normalize(prop)] = helpers.normalize(object[prop]);
+            delete object[prop];
+          }
+          else {
+            object[prop] = helpers.normalize(object[prop]);
+          }
+        }
+      }
+    }
+  }
+
+  return object;
+};
