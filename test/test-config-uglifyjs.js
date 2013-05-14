@@ -20,6 +20,10 @@ var block = {
   };
 
 describe('Uglifyjs config write', function () {
+  it('should have a correct name', function() {
+    assert.equal(uglifyjsConfig.name, 'uglify');
+  });
+
   it('should use the input files correctly', function () {
     var ctx = { inDir: 'zzz', inFiles: ['foo.js', 'bar.js', 'baz.js'], outDir: 'tmp/uglifyjs', outFiles: []};
     var cfg = uglifyjsConfig.createConfig( ctx, block );

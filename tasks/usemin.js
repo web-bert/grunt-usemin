@@ -132,15 +132,7 @@ module.exports = function (grunt) {
     var options = this.options();
     // collect files
     var files = grunt.file.expand({filter: 'isFile'}, this.data);
-    var uglifyName = options.uglify || 'uglify';
-    var cssminName = options.cssmin || 'cssmin';
     var dest = options.dest || 'dist';
-
-    // concat / uglify / cssmin / requirejs config
-    var concat = grunt.config('concat') || {};
-    var uglify = grunt.config(uglifyName) || {};
-    var cssmin = grunt.config(cssminName) || {};
-    var requirejs = grunt.config('requirejs') || {};
 
     grunt.log
       .writeln('Going through ' + grunt.log.wordlist(files) + ' to update the config')
@@ -150,28 +142,30 @@ module.exports = function (grunt) {
 
     var c = new ConfigWriter( flow.steps, flow.post, {input: 'app', dest: dest, staging: '.tmp'} );
 
+    var cfgNames = [];
+    c.steps.forEach(function(i) { cfgNames.push(i.name);});
+    c.postprocessors.forEach(function(i) { cfgNames.push(i.name);});
+
+    var gruntConfig = {};
+    _.each(cfgNames, function(name) {
+      gruntConfig[name] = grunt.config(name) || {};
+    });
+
     files.forEach(function (filepath) {
 
       var config = c.process(filepath, grunt.config());
 
-      concat = _.extend(concat, config.concat);
-      uglify = _.extend(uglify, config.uglifyjs);
-      requirejs = _.extend(requirejs, config.requirejs);
-      grunt.config('concat', concat);
-      grunt.config('uglify', uglify);
-      grunt.config('requirejs', requirejs);
+      _.each(cfgNames, function(name) {
+        gruntConfig[name] = grunt.config(name) || {};
+        grunt.config(name, _.extend(gruntConfig[name], config[name]));
+      });
 
     });
 
     // log a bit what was added to config
-    grunt.log.subhead('Configuration is now:')
-      .subhead('  cssmin:')
-      .writeln('  ' + inspect(cssmin))
-      .subhead('  concat:')
-      .writeln('  ' + inspect(concat))
-      .subhead('  uglify:')
-      .writeln('  ' + inspect(uglify))
-      .subhead('  requirejs:')
-      .writeln('  ' + inspect(requirejs));
+    grunt.log.subhead('Configuration is now:');
+    _.each(cfgNames, function(name) {
+      grunt.log.subhead('  ' + name + ':').writeln('  ' + inspect(grunt.config(name)));
+    });
   });
 };

@@ -249,8 +249,10 @@ The given steps or post-processors may be given by strings (for the default step
 
 User-defined steps and post-processors must have 2 attributes:
 
-* `name`: which is the name of the step or post-processors
+* `name`: name of the `Gruntfile` attribute that holds the corresponding config
 * `createConfig` which is a 2 arguments function ( a `context` and the treated `block`)
+
+For example of steps/post-processors, you can have a look at `concat` and `uglifyjs` in the `lib/config` directory of this repository.
 
 ##### `createConfig`
 
@@ -269,6 +271,39 @@ Attributes:
 * `options`: options of the `Grubntfile.js` for this step (e.g. if the step is named `foo`, holds configuration of teh `Gruntfile.js` associated to the attribute `foo`)
 
 ###### `block`
+The actual looked-at block, parsed an put in a structure.
+
+Example:
+The following block
+```html
+  <!-- build:js scripts/site.js -->',
+  <script src="foo.js"></script>',
+  <script src="bar.js"></script>',
+  <script src="baz.js"></script>',
+  <!-- endbuild -->'
+```
+
+is parsed as, and given to `createConfig` as:
+
+```js
+var block = {
+    type: 'js',
+    dest: 'scripts/site.js',
+    src: [
+      'foo.js',
+      'bar.js',
+      'baz.js'
+    ],
+    raw: [
+      '    <!-- build:js scripts/site.js -->',
+      '    <script src="foo.js"></script>',
+      '    <script src="bar.js"></script>',
+      '    <script src="baz.js"></script>',
+      '    <!-- endbuild -->'
+    ]
+  };
+
+```
 
 
 ## The usemin task

@@ -8,6 +8,17 @@ describe('ConfigWriter', function () {
 
   describe('constructor', function() {
     it('should check it\'s input');
+    it('should allow for user-defined steps', function() {
+      var copy = {
+        name: 'copy',
+        createConfig: function() { return {}; }
+      };
+
+      var cfgw = new ConfigWriter(['concat', 'uglifyjs', copy], [], {input: 'app', dest: 'dist', staging: '.tmp'});
+      var stepNames = [];
+      cfgw.steps.forEach(function(s) { stepNames.push(s.name);});
+      assert.deepEqual(stepNames, ['concat', 'uglify', 'copy']);
+    });
     it('should use in and out dirs');
   });
 
@@ -24,7 +35,7 @@ describe('ConfigWriter', function () {
       var config = c.process(file);
       assert.deepEqual(config, {
         'concat':{'.tmp/concat/scripts/site.js': ['app/foo.js', 'app/bar.js', 'app/baz.js']},
-        'uglifyjs': {'dist/scripts/site.js': ['.tmp/concat/scripts/site.js']}
+        'uglify': {'dist/scripts/site.js': ['.tmp/concat/scripts/site.js']}
       });
     });
 
@@ -36,7 +47,7 @@ describe('ConfigWriter', function () {
       var config = c.process(file);
       assert.deepEqual(config, {
         'concat':{'.tmp/concat/scripts/site.js': ['app/foo.js', 'app/bar.js', 'app/baz.js']},
-        'uglifyjs': {'destination/scripts/site.js': ['.tmp/concat/scripts/site.js']}
+        'uglify': {'destination/scripts/site.js': ['.tmp/concat/scripts/site.js']}
       });
     });
 
@@ -48,7 +59,7 @@ describe('ConfigWriter', function () {
       var config = c.process(file);
       assert.deepEqual(config, {
         'concat': { 'staging/concat/scripts/site.js': ['app/foo.js', 'app/bar.js', 'app/baz.js'] },
-        'uglifyjs': { 'dist/scripts/site.js': ['staging/concat/scripts/site.js'] }
+        'uglify': { 'dist/scripts/site.js': ['staging/concat/scripts/site.js'] }
       });
     });
 
@@ -58,7 +69,7 @@ describe('ConfigWriter', function () {
       var file = helpers.createFile('foo', 'app', blocks);
       var c = new ConfigWriter( flow, [], {input: 'app', dest: 'dist', staging: 'staging'} );
       var config = c.process(file);
-      assert.deepEqual(config, {'uglifyjs': {'dist/scripts/site.js': ['app/foo.js', 'app/bar.js', 'app/baz.js']}});
+      assert.deepEqual(config, {'uglify': {'dist/scripts/site.js': ['app/foo.js', 'app/bar.js', 'app/baz.js']}});
     });
 
     it('should rewrite the requirejs config if needed', function() {
@@ -70,7 +81,7 @@ describe('ConfigWriter', function () {
 
       assert.deepEqual(config, {
         'concat':{'staging/concat/scripts/amd-app.js': ['app/scripts/main.js']},
-        'uglifyjs': {'dist/scripts/amd-app.js': ['staging/concat/scripts/amd-app.js']},
+        'uglify': {'dist/scripts/amd-app.js': ['staging/concat/scripts/amd-app.js']},
         'requirejs': { 'default':
           {
             options: {name: 'main', out: 'dist/scripts/amd-app.js', baseUrl: 'app/scripts', mainConfigFile: 'app/scripts/main.js'}
@@ -87,8 +98,8 @@ describe('ConfigWriter', function () {
       var config = c.process(file);
 
       assert.deepEqual(config, {
-        'uglifyjs': {'staging/uglifyjs/foo.js': ['app/foo.js'], 'staging/uglifyjs/bar.js': ['app/bar.js'], 'staging/uglifyjs/baz.js': ['app/baz.js']},
-        'concat': {'dist/scripts/site.js': ['staging/uglifyjs/foo.js', 'staging/uglifyjs/bar.js', 'staging/uglifyjs/baz.js']}
+        'uglify': {'staging/uglify/foo.js': ['app/foo.js'], 'staging/uglify/bar.js': ['app/bar.js'], 'staging/uglify/baz.js': ['app/baz.js']},
+        'concat': {'dist/scripts/site.js': ['staging/uglify/foo.js', 'staging/uglify/bar.js', 'staging/uglify/baz.js']}
       });
     });
 
@@ -100,7 +111,7 @@ describe('ConfigWriter', function () {
       config = c.process(file, config);
       assert.deepEqual(config, {
         'concat':{'.tmp/concat/scripts/site.js': ['app/foo.js', 'app/bar.js', 'app/baz.js'], 'foo.js': 'bar.js'},
-        'uglifyjs': {'destination/scripts/site.js': ['.tmp/concat/scripts/site.js']}
+        'uglify': {'destination/scripts/site.js': ['.tmp/concat/scripts/site.js']}
       });
     });
 

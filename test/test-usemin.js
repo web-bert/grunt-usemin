@@ -483,8 +483,8 @@ describe('useminPrepare', function () {
     var concat = grunt.config('concat');
     var requirejs = grunt.config('requirejs');
 
-    assert.deepEqual(concat, {});
-    assert.deepEqual(requirejs, {});
+    assert.equal(concat, null);
+    assert.equal(requirejs, null);
     assert.ok(uglify);
 
     assert.equal(uglify['dist/styles/main.min.css'], 'styles/main.css');
@@ -513,8 +513,8 @@ describe('useminPrepare', function () {
     var concat = grunt.config('concat');
     var requirejs = grunt.config('requirejs');
 
-    assert.deepEqual(concat, {});
-    assert.deepEqual(requirejs, {});
+    assert.equal(concat, null);
+    assert.equal(requirejs, null);
     assert.ok(uglify);
 
     assert.equal(uglify['dist/styles/main.min.css'], 'styles/main.css');
@@ -522,6 +522,39 @@ describe('useminPrepare', function () {
   });
 
 
-  it('should allow use to furnish new steps of the flow');
+  it('should allow use to furnish new steps of the flow', function() {
+    var copy = {
+        name: 'copy',
+        createConfig: function(context,block) {
+            var cfg = {};
+            var inFiles = [];
+            context.inFiles.forEach(function(file) { inFiles.push(path.join(context.inDir, file));});
+            cfg[path.join(context.outDir, block.dest)] = inFiles;
+            return cfg;
+          }
+      };
+    grunt.log.muted = true;
+    grunt.config.init();
+    grunt.config('useminPrepare', {
+      html: 'index.html',
+      options: {
+        flow: {
+            steps: [copy],
+            post: []
+          }
+        }
+      });
+    grunt.file.copy(path.join(__dirname, 'fixtures/usemin.html'), 'index.html');
+    grunt.task.run('useminPrepare');
+    grunt.task.start();
+
+    var copyCfg = grunt.config('copy');
+
+    assert.ok(copyCfg);
+    assert.ok(copyCfg['dist/styles/main.min.css']);
+    assert.ok(copyCfg['dist/scripts/plugins.js']);
+    assert.ok(copyCfg['dist/scripts/amd-app.js']);
+
+  });
 });
 
