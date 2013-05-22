@@ -37,6 +37,14 @@ describe('RevvedFinder', function () {
         assert.equal('image.2345.png', rfile );
       });
 
+      it('should return revved version of the given file (prefix)', function () {
+        var rf = new RevvedFinder(function () {
+          return ['./2345.image.png'];
+        });
+        var rfile = rf.find('image.png', '.');
+        assert.equal('2345.image.png', rfile );
+      });
+
       // it('should pay attention to the full given path', function () {
       //   var rf = new RevvedFinder(function () {
       //     return ['./foo/bar/7345.image.png', './bar/2345.image.png'];
