@@ -1,6 +1,7 @@
 'use strict';
 var assert = require('assert');
 var uglifyjsConfig = require('../lib/config/uglifyjs.js');
+var path = require('path');
 
 var block = {
     type: 'js',
@@ -27,20 +28,20 @@ describe('Uglifyjs config write', function () {
   it('should use the input files correctly', function () {
     var ctx = { inDir: 'zzz', inFiles: ['foo.js', 'bar.js', 'baz.js'], outDir: 'tmp/uglifyjs', outFiles: []};
     var cfg = uglifyjsConfig.createConfig( ctx, block );
-    assert.ok(cfg['tmp/uglifyjs/foo.js']);
-    assert.deepEqual(cfg['tmp/uglifyjs/foo.js'], ['zzz/foo.js']);
-    assert.ok(cfg['tmp/uglifyjs/bar.js']);
-    assert.deepEqual(cfg['tmp/uglifyjs/bar.js'], ['zzz/bar.js']);
-    assert.ok(cfg['tmp/uglifyjs/baz.js']);
-    assert.deepEqual(cfg['tmp/uglifyjs/baz.js'], ['zzz/baz.js']);
+    assert.ok(cfg[path.normalize('tmp/uglifyjs/foo.js')]);
+    assert.deepEqual(cfg[path.normalize('tmp/uglifyjs/foo.js')], [path.normalize('zzz/foo.js')]);
+    assert.ok(cfg[path.normalize('tmp/uglifyjs/bar.js')]);
+    assert.deepEqual(cfg[path.normalize('tmp/uglifyjs/bar.js')], [path.normalize('zzz/bar.js')]);
+    assert.ok(cfg[path.normalize('tmp/uglifyjs/baz.js')]);
+    assert.deepEqual(cfg[path.normalize('tmp/uglifyjs/baz.js')], [path.normalize('zzz/baz.js')]);
     assert.deepEqual(ctx.outFiles, ['foo.js', 'bar.js', 'baz.js']);
   });
 
   it('should use the destination file if it is the laast step of the pipe.', function () {
     var ctx = { inDir: 'zzz', inFiles: ['foo.js', 'bar.js', 'baz.js'], outDir: 'dist', outFiles: [], last: true};
     var cfg = uglifyjsConfig.createConfig( ctx, block );
-    assert.ok(cfg['dist/scripts/site.js']);
-    assert.deepEqual(cfg['dist/scripts/site.js'], ['zzz/foo.js', 'zzz/bar.js', 'zzz/baz.js']);
+    assert.ok(cfg[path.normalize('dist/scripts/site.js')]);
+    assert.deepEqual(cfg[path.normalize('dist/scripts/site.js')], [path.normalize('zzz/foo.js'), path.normalize('zzz/bar.js'), path.normalize('zzz/baz.js')]);
     assert.deepEqual(ctx.outFiles, ['scripts/site.js']);
   });
 

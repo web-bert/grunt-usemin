@@ -13,26 +13,16 @@ module.exports = function (grunt) {
         '!test/temp/**/*.js',
         '!test/fixtures/*.js'
       ]
+    },
+    mochacli: {
+      all: ['test/test-*.js']
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-mocha-cli');
 
   grunt.loadTasks('tasks');
 
-  grunt.registerTask('test', 'Run tests', function () {
-    var done = this.async();
-    var spawnOpts = {
-      cmd: 'node_modules/mocha/bin/mocha',
-      args: grunt.file.expand('test/test-*.js')
-    };
-    grunt.util.spawn(spawnOpts, function (err, res, code) {
-      grunt.log.write(res.stdout);
-      if (code) {
-        throw res.stderr;
-      }
-      done();
-    });
-  });
-  grunt.registerTask('default', ['jshint', 'test']);
+  grunt.registerTask('default', ['jshint', 'mochacli']);
 };

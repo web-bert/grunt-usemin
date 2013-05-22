@@ -1,6 +1,7 @@
 'use strict';
 var assert = require('assert');
 var concatConfig = require('../lib/config/concat.js');
+var path = require('path');
 
 var block = {
     type: 'js',
@@ -27,8 +28,8 @@ describe('Concat config write', function () {
   it('should use the input files correctly', function () {
     var ctx = { inDir: '.', inFiles: ['foo.js', 'bar.js', 'baz.js'], outDir: 'tmp/concat', outFiles: []};
     var cfg = concatConfig.createConfig( ctx, block );
-    assert.ok(cfg['tmp/concat/scripts/site.js']);
-    assert.deepEqual(cfg['tmp/concat/scripts/site.js'], ['foo.js', 'bar.js', 'baz.js']);
+    assert.ok(cfg[path.normalize('tmp/concat/scripts/site.js')]);
+    assert.deepEqual(cfg[path.normalize('tmp/concat/scripts/site.js')], ['foo.js', 'bar.js', 'baz.js']);
     assert.deepEqual(ctx.outFiles, ['scripts/site.js']);
   });
 });

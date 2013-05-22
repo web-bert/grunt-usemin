@@ -132,14 +132,14 @@ describe('FileProcessor', function() {
 	describe('html type', function() {
 		var fp;
 		var filemapping = {
-		    'foo.js': '1234.foo.js',
-		    '/foo.js': '/1234.foo.js',
-		    'app/bar.css': '5678.bar.css',
-		    'app/baz.css': '/8910.baz.css',
-		    'app/image.png': '1234.image.png',
-		    'tmp/bar.css': '1234.bar.css',
-		    'app/foo.js': '1234.foo.js',
-		    '/styles/main.css': '/styles/1234.main.css'
+		    'foo.js': 'foo.1234.js',
+		    '/foo.js': '/foo.1234.js',
+		    'app/bar.css': 'bar.5678.css',
+		    'app/baz.css': '/baz.8910.css',
+		    'app/image.png': 'image.1234.png',
+		    'tmp/bar.css': 'bar.1234.css',
+		    'app/foo.js': 'foo.1234.js',
+		    '/styles/main.css': '/styles/main.1234.css'
 	    };
 
 		var revvedfinder = helpers.makeFinder(filemapping);
@@ -184,7 +184,7 @@ describe('FileProcessor', function() {
 
       it('should replace file referenced from root', function () {
 	        var replaced = fp.replaceWithRevved('<link rel="stylesheet" href="/styles/main.css">', ['']);
-	        assert.equal(replaced, '<link rel="stylesheet" href="/styles/1234.main.css">');
+	        assert.equal(replaced, '<link rel="stylesheet" href="/styles/main.1234.css">');
 	      });
 
       it('should not replace the root (i.e /)', function () {
@@ -204,8 +204,8 @@ describe('FileProcessor', function() {
 	        var content = '<script src="foo.js" type="text/javascript"></script><link rel="stylesheet" href="/baz.css">';
 	        var replaced = fp.replaceWithRevved(content, ['app', 'tmp']);
 
-	        assert.ok(replaced.match(/<link rel="stylesheet" href="\/8910\.baz\.css">/));
-	        assert.ok(replaced.match(/<script src="1234\.foo\.js" type="text\/javascript"><\/script>/));
+	        assert.ok(replaced.match(/<link rel="stylesheet" href="\/baz\.8910\.css">/));
+	        assert.ok(replaced.match(/<script src="foo\.1234\.js" type="text\/javascript"><\/script>/));
 	      });
     });
 
@@ -233,7 +233,7 @@ describe('FileProcessor', function() {
     it('should replace CSS reference with revved version', function () {
 	      var content = '<link rel="stylesheet" href="bar.css">';
 	      var replaced = fp.replaceWithRevved(content, ['app']);
-	      assert.equal(replaced, '<link rel="stylesheet" href="5678.bar.css">');
+	      assert.equal(replaced, '<link rel="stylesheet" href="bar.5678.css">');
 	    });
 
     it('should replace img reference with revved version', function () {
@@ -273,12 +273,12 @@ describe('FileProcessor', function() {
     describe('absolute path', function() {
 			var content = '.myclass {\nbackground: url("/images/test.png") no-repeat center center;\nbackground: url("/images/misc/test.png") no-repeat center center;\nbackground: url("//images/foo.png") no-repeat center center;}';
 			var filemapping = {
-	      'build/images/test.png': '/images/23012.test.png',
-	      'build/images/foo.png': '//images/23012.foo.png',
-	      'build/images/misc/test.png': '/images/misc/23012.test.png',
-	      'foo/images/test.png': '/images/23012.test.png',
-	      'foo/images/foo.png': '//images/23012.foo.png',
-	      'foo/images/misc/test.png': '/images/misc/23012.test.png'
+	      'build/images/test.png': '/images/test.23012.png',
+	      'build/images/foo.png': '//images/foo.23012.png',
+	      'build/images/misc/test.png': '/images/misc/test.23012.png',
+	      'foo/images/test.png': '/images/test.23012.png',
+	      'foo/images/foo.png': '//images/foo.23012.png',
+	      'foo/images/misc/test.png': '/images/misc/test.23012.png'
 			};
 
 			var revvedfinder = helpers.makeFinder(filemapping);
@@ -290,17 +290,17 @@ describe('FileProcessor', function() {
 	    it('should replace with revved files when found', function(){
 		      var changed = cp.replaceWithRevved(content,['build']);
 
-		      assert.ok(changed.match(/\/images\/23012\.test\.png/));
-		      assert.ok(changed.match(/\/images\/misc\/23012\.test\.png/));
-		      assert.ok(changed.match(/\/\/images\/23012\.foo\.png/));
+		      assert.ok(changed.match(/\/images\/test\.23012\.png/));
+		      assert.ok(changed.match(/\/images\/misc\/test\.23012\.png/));
+		      assert.ok(changed.match(/\/\/images\/foo\.23012\.png/));
 		    });
 
 	    it('should take into account alternate search paths', function(){
 		      var changed = cp.replaceWithRevved(content, ['foo']);
 
-		      assert.ok(changed.match(/\/images\/23012\.test\.png/));
-		      assert.ok(changed.match(/\/images\/misc\/23012\.test\.png/));
-		      assert.ok(changed.match(/\/\/images\/23012\.foo\.png/));
+		      assert.ok(changed.match(/\/images\/test\.23012\.png/));
+		      assert.ok(changed.match(/\/images\/misc\/test\.23012\.png/));
+		      assert.ok(changed.match(/\/\/images\/foo\.23012\.png/));
 
 		    });
 
@@ -309,11 +309,11 @@ describe('FileProcessor', function() {
     describe('relative path', function() {
 			var content = '.myclass {\nbackground: url("images/test.png") no-repeat center center;\nbackground: url("../images/misc/test.png") no-repeat center center;\nbackground: url("images/foo.png") no-repeat center center;}';
 			var filemapping = {
-	      'build/images/test.png': 'images/23012.test.png',
-	      'build/images/foo.png': 'images/23012.foo.png',
-	      'images/misc/test.png': '../images/misc/23012.test.png',
-	      'foo/images/test.png': 'images/23012.test.png',
-	      'foo/images/foo.png': 'images/23012.foo.png',
+	      'build/images/test.png': 'images/test.23012.png',
+	      'build/images/foo.png': 'images/foo.23012.png',
+	      'images/misc/test.png': '../images/misc/test.23012.png',
+	      'foo/images/test.png': 'images/test.23012.png',
+	      'foo/images/foo.png': 'images/foo.23012.png',
 			};
 
 			var revvedfinder = helpers.makeFinder(filemapping);
@@ -325,17 +325,17 @@ describe('FileProcessor', function() {
 	    it('should replace with revved files when found', function(){
 		      var changed = cp.replaceWithRevved(content, ['build']);
 
-		      assert.ok(changed.match(/\"images\/23012\.test\.png/));
-		      assert.ok(changed.match(/\"\.\.\/images\/misc\/23012\.test\.png/));
-		      assert.ok(changed.match(/\"images\/23012\.foo\.png/));
+		      assert.ok(changed.match(/\"images\/test\.23012\.png/));
+		      assert.ok(changed.match(/\"\.\.\/images\/misc\/test\.23012\.png/));
+		      assert.ok(changed.match(/\"images\/foo\.23012\.png/));
 		    });
 
 	    it('should take into account alternate search paths', function(){
 		      var changed = cp.replaceWithRevved(content, ['foo']);
 
-		      assert.ok(changed.match(/\"images\/23012\.test\.png/));
-		      assert.ok(changed.match(/\"\.\.\/images\/misc\/23012\.test\.png/));
-		      assert.ok(changed.match(/\"images\/23012\.foo\.png/));
+		      assert.ok(changed.match(/\"images\/test\.23012\.png/));
+		      assert.ok(changed.match(/\"\.\.\/images\/misc\/test\.23012\.png/));
+		      assert.ok(changed.match(/\"images\/foo\.23012\.png/));
 
 		    });
     });

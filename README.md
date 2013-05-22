@@ -45,7 +45,7 @@ This asset search directories collection is by default set to the location of th
 ```
 By default `usemin` will look under `dist/html` for revved versions of:
 
-- `styles/main.css`: a revved version of `main.css` will be looked at under the `dist/html/styles` directory. For example a file `dist/html/styles/1234.main.css` will match (although `dist/html/1234.main.css` won't: the path of the referenced file is important)
+- `styles/main.css`: a revved version of `main.css` will be looked at under the `dist/html/styles` directory. For example a file `dist/html/styles/main.1234.css` will match (although `dist/html/main.1234.css` won't: the path of the referenced file is important)
 - `../images/test.png`: it basically means that a revved version of `test.png` will be looked for under the `dist/images` directory
 
 #### Example 2: file `dist/html/index.html` has the following content:
@@ -54,7 +54,7 @@ By default `usemin` will look under `dist/html` for revved versions of:
     <link rel="stylesheet" href="/styles/main.css">
     <img src="/images/test.png">
 ```
-By default `usemin` will look under `dist/html` for revved versions of `styles/main.css` and `images/test.png`. Now let's suppose our assets are scattered in `dist/assets`. By changing the asset search path list to `['dist/assets']`, the revved versions of the files will be looked under `dist/assets` (and thus, for example, `dist/assets/images/875487.tes.png` and `dist/assets/styles/98090.main.css`) will be found.
+By default `usemin` will look under `dist/html` for revved versions of `styles/main.css` and `images/test.png`. Now let's suppose our assets are scattered in `dist/assets`. By changing the asset search path list to `['dist/assets']`, the revved versions of the files will be looked under `dist/assets` (and thus, for example, `dist/assets/images/test.875487.png` and `dist/assets/styles/main.98090.css`) will be found.
 
 ### Options
 
@@ -353,8 +353,8 @@ Relative files references are also looked at from location of the examined file,
 
 ### usemin
 `usemin` target is replacing references to images, scrips, css, ... in the furnished files (html, css, ...). These references may be either absolute (i.e. `/images/foo.png`) or relative (i.e. `image/foo.png` or `../images/foo.png`).
-When the reference is absolute a set of asset search paths should be looked at under the destination directory (for example, using the previous example, and `searchpath` equal to `['assets']`, `usemin` would try to find either a revved version of the image of the image bellow the `assets` directory: for example `dest/assets/images/1223443.foo.png`).
-When the reference is relative, by default the referenced item is looked in the path relative *to the current file location* in the destination directory (e.g. with the preceding example, if the file is `build/bar/index.html`, then transformed `index.html` will be in `dist/bar`, and `usemin` will look for `dist/bar/../images/32323.foo.png`).
+When the reference is absolute a set of asset search paths should be looked at under the destination directory (for example, using the previous example, and `searchpath` equal to `['assets']`, `usemin` would try to find either a revved version of the image of the image bellow the `assets` directory: for example `dest/assets/images/foo.1223443.png`).
+When the reference is relative, by default the referenced item is looked in the path relative *to the current file location* in the destination directory (e.g. with the preceding example, if the file is `build/bar/index.html`, then transformed `index.html` will be in `dist/bar`, and `usemin` will look for `dist/bar/../images/foo.32323.png`).
 
 ## License
 
