@@ -292,6 +292,23 @@ describe('usemin', function () {
     assert.ok(changed.match(/referenceToImage = 'image\.2132\.png'/));
   });
 
+  it('should use revved summary file when given one', function() {
+    grunt.file.mkdir('images');
+    grunt.file.write('images/test.2132.png', 'foo');
+    grunt.file.write('images/test.2134.png', 'foo');
+    grunt.file.write('summary.js', '{"images/test.png": "images/test.2134.png"}');
+    grunt.log.muted = true;
+    grunt.config.init();
+    grunt.config('usemin', {html: 'index.html', options: { revmap: 'summary.js'}});
+    grunt.file.copy(path.join(__dirname, 'fixtures/usemin.html'), 'index.html');
+    grunt.task.run('usemin');
+    grunt.task.start();
+
+    var changed = grunt.file.read('index.html');
+    // Check replace has performed its duty
+    assert.ok(changed.match('<img src="images/test.2134.png">'));
+
+  });
 
 });
 

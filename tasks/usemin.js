@@ -109,7 +109,8 @@ module.exports = function (grunt) {
       patterns = options.type;
     }
 
-    var revvedfinder = new RevvedFinder(function (p) { return grunt.file.expand({filter: 'isFile'}, p); });
+    var locator = options.revmap ? grunt.file.readJSON(options.revmap) : function (p) { return grunt.file.expand({filter: 'isFile'}, p); };
+    var revvedfinder = new RevvedFinder(locator);
     var handler = new FileProcessor(patterns, revvedfinder, function (msg) { grunt.log.writeln(msg);});
 
     this.files.forEach(function (fileObj) {

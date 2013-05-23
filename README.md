@@ -106,8 +106,20 @@ So in short:
     * FIXME
     * FIXME
 
+#### revmap
 
+Type: 'String'
+Default: Empty
 
+Indicate the location of a map file, as produced by `grunt-rev` for example. This map file is a simple JSON file, holding an object
+which attributes are the original file and associated value is the transformed file. For example:
+
+```js
+{
+  "foo.png": "foo.1234.png"
+}
+```
+This map will be used instead of looking for file on the disk.
 
 ## The useminPrepare task
 
@@ -305,41 +317,6 @@ var block = {
 
 ```
 
-
-## The usemin task
-
-This task is responsible for replacing in HTML and CSS files, references to non-minified files with reference to their minified/revved version if they are found on the disk.
-
-```js
-usemin: {
-  html: ['**/*.html'],
-  css: ['**/*.css'],
-  options: {
-    dirs: ['temp', 'dist']
-  }
-}
-```
-### dirs
-Type: 'array of strings'
-Default: nil
-
-Used to limit the directories that will be looked for revved files when replacing reference. By default all subdirectories are looked at.
-
-### basedir
-Type: 'string'
-Default: nil
-
-Change the basedir that represent the location of the transformed file. For example, let's imagine you have someting like:
-
-```
-|
-+--- styles
-    \ main.css
-+--- views
-    \ index.html
-```
-
-By default, if the file to be transformed is `index.html`, the images, scripts, ... referenced by this file will be considered are being in the `views` directory, whereas they must be linked to the `styles` directory.
 
 ## On directories
 The main difference to be kept in mind, regarding directories and tasks, is that for `useminPrepare`, the directories needs to indicate the input, transient and output path needed to output the right configuration for the processors pipeline, whereas in the case of `usemin` it only reflects the output paths, as all the needed assets should have been output to the destination dir (either transformed or just copied)
