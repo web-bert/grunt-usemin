@@ -29,11 +29,25 @@ describe('RevvedFinder', function () {
       assert.equal('2345.image.png', rf.find('image.png', '.'));
     });
 
+    it('should return revved version of the given file, ignoring spaces', function () {
+      var rf = new RevvedFinder(function () {
+        return ['2345.image.png'];
+      });
+      assert.equal('2345.image.png', rf.find(' image.png ', '.'));
+    });
+
     it('should pay attention to the full given path', function () {
       var rf = new RevvedFinder(function () {
         return ['7345.image.png', 'bar/2345.image.png'];
       });
       assert.equal('bar/2345.image.png', rf.find('bar/image.png', '.'));
+    });
+
+    it('should pay attention to the full given path, ignoring spaces', function () {
+      var rf = new RevvedFinder(function () {
+        return ['7345.image.png', 'bar/2345.image.png'];
+      });
+      assert.equal('bar/2345.image.png', rf.find(' bar/image.png ', '.'));
     });
 
     it('should return revved version if it ends hex in characters', function () {
